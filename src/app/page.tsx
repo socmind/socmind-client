@@ -12,7 +12,7 @@ export default function Home() {
   const [chats, setChats] = useState<Chat[]>([]);
   const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
-  const [isLoading, setIsLoading] = useState<Boolean>(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Centralized function to add chats
   const addChatIfNotExists = (newChat: Chat) => {
@@ -27,17 +27,15 @@ export default function Home() {
   };
 
   useEffect(() => {
-    setIsLoading(true);
-
     if (socket) {
       // Listen for initial chats
       socket.on("initialData", (receivedChats: Chat[]) => {
         setChats(receivedChats);
+        setIsLoading(false);
         // if (receivedChats.length > 0) {
         //   setSelectedChat(receivedChats[0]);
         //   socket.emit("chatHistory", receivedChats[0].id);
         // }
-        setIsLoading(false);
       });
 
       // Listen for new chats
@@ -50,7 +48,6 @@ export default function Home() {
         "chatHistory",
         (chatData: { chatId: string; messages: Message[] }) => {
           setCurrentMessages(chatData.messages);
-          setIsLoading(false);
         }
       );
     }
@@ -100,9 +97,9 @@ export default function Home() {
 
   const handleChatSelect = (chat: Chat) => {
     setSelectedChat(chat);
+    setCurrentMessages([]); // Clear messages immediately
     if (socket) {
       socket.emit("chatHistory", chat.id);
-      setIsLoading(true);
     }
   };
 
@@ -121,14 +118,6 @@ export default function Home() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-gray-100">
-        <div className="text-2xl font-semibold text-gray-600">Loading...</div>
-      </div>
-    );
-  }
-
   return (
     <main className="flex h-screen bg-gray-100">
       <Sidebar
@@ -136,6 +125,7 @@ export default function Home() {
         selectedChat={selectedChat}
         onChatSelect={handleChatSelect}
         onNewChat={addNewChat}
+        isLoading={isLoading}
       />
       {selectedChat ? (
         <ChatArea
@@ -144,9 +134,10 @@ export default function Home() {
           onSendMessage={addNewMessage}
         />
       ) : (
-        <div className="flex-1 flex items-center justify-center text-gray-500">
-          Welcome to the Society of Mind. Join a groupchat with ChatGPT, Claude, Gemini, Llama, and Grok.
-          Watch artificial intelligences converse with each other.
+        <div className="flex-1 flex items-center justify-center text-center text-[#1b2e5c]">
+          Welcome to the Society of Mind.<br />
+          Join or create a groupchat with ChatGPT, Grok, DeepSeek, Claude, Gemini, and Llama.<br />
+          Watch artificial intelligences converse with one another.
         </div>
       )}
     </main>
