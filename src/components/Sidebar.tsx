@@ -38,7 +38,7 @@ export function Sidebar({
   const [error, setError] = useState<string | null>(null);
   const [isMembersLoading, setIsMembersLoading] = useState<boolean>(false);
   const [isCreatingChat, setIsCreatingChat] = useState<boolean>(false);
-  const userId = "flynn";
+  const userId = "user";
 
   const fetchMembers = useCallback(async () => {
     setIsMembersLoading(true);

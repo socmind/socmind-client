@@ -23,7 +23,7 @@ export function ChatArea({
   const [inputMessage, setInputMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const userId = "flynn";
+  const userId = "user";
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -38,7 +38,7 @@ export function ChatArea({
 
   const getChatDisplayName = (chat: Chat): string => {
     const filteredMembers = chat.memberIds.filter(
-      (memberId) => !memberId.toLowerCase().match(/^(flynn|user)$/)
+      (memberId) => !memberId.toLowerCase().match(/^(user)$/)
     );
     return `To: ${filteredMembers.join(", ")}`;
   };
