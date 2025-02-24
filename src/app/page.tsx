@@ -32,6 +32,7 @@ export default function Home() {
       socket.on("initialData", (receivedChats: Chat[]) => {
         setChats(receivedChats);
         setIsLoading(false);
+        console.log(receivedChats);
         // if (receivedChats.length > 0) {
         //   setSelectedChat(receivedChats[0]);
         //   socket.emit("chatHistory", receivedChats[0].id);
@@ -75,7 +76,7 @@ export default function Home() {
         setChats((prevChats) =>
           prevChats.map((chat) =>
             chat.id === newMessage.chatId
-              ? { ...chat, lastMessage: newMessage }
+              ? { ...chat, latestMessage: newMessage }
               : chat
           )
         );

@@ -9,7 +9,7 @@ export interface Chat {
   createdAt: string;
   updatedAt: string;
   memberIds: string[];
-  lastMessage?: Message;
+  latestMessage?: Message;
 }
 
 export type MessageType = "MEMBER" | "SYSTEM";

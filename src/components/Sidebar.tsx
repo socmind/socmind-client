@@ -17,8 +17,8 @@ interface SidebarProps {
   isLoading?: boolean;
 }
 
-function getLastMessage(chat: Chat): string {
-  return chat.lastMessage?.content.text ?? "";
+function getLatestMessage(chat: Chat): string {
+  return chat.latestMessage?.content.text ?? "";
 }
 
 function getChatDisplayName(chat: Chat): string {
@@ -153,13 +153,14 @@ export function Sidebar({
               )}
             </div>
             <div className="p-3 border-t flex justify-end space-x-2">
-              <button
-                onClick={() => setIsDropdownOpen(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                disabled={isCreatingChat}
-              >
-                Cancel
-              </button>
+              {!isCreatingChat && (
+                <button
+                  onClick={() => setIsDropdownOpen(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+              )}
               <button
                 onClick={handleCreateChat}
                 disabled={isCreatingChat || selectedMembers.length === 0}
@@ -211,7 +212,7 @@ export function Sidebar({
                       : "text-gray-500"
                   }`}
                 >
-                  {getLastMessage(chat)}
+                  {getLatestMessage(chat)}
                 </p>
               </div>
             </div>
