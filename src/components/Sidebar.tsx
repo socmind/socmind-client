@@ -101,9 +101,12 @@ export function Sidebar({
       {/* Header with title and new chat button */}
       <div className="relative mb-4">
         <div className="flex justify-between items-center">
-          <div className={`${orbitron.className} text-2xl tracking-tight text-[#1b2e5c] transition-colors`}>
+          <a
+            href="https://www.societyofmind.ai"
+            className={`${orbitron.className} text-2xl tracking-tight text-[#1b2e5c] transition-colors hover:text-blue-600`}
+          >
             SocietyOfMind
-          </div>
+          </a>
           <button
             onClick={handleNewChatClick}
             className="p-1.5 flex items-center justify-center bg-[#1b2e5c] text-white rounded-md hover:bg-blue-600 transition-colors"
