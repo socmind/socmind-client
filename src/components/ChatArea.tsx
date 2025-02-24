@@ -162,12 +162,12 @@ function MessageBubble({ message, isUser }: MessageBubbleProps): JSX.Element {
             </span>
           )}
           <div
-            className={`py-1 px-3 rounded-2xl ${bubbleClass} break-words min-h-8 flex items-center whitespace-pre-wrap`}
+            className={`py-1 px-3 rounded-2xl ${bubbleClass} break-words min-h-8 flex items-center whitespace-pre-wrap max-w-full overflow-x-auto`}
           >
             <ReactMarkdown
               className={`prose prose-sm ${
                 isUser ? "prose-invert !text-white" : ""
-              }`}
+              } [&_.katex-display]:!overflow-x-auto [&_.katex-display]:!overflow-y-hidden [&_.katex]:max-w-full [&_.katex]:!overflow-x-auto [&_.katex]:!overflow-y-hidden`}
               remarkPlugins={[remarkMath]}
               rehypePlugins={[rehypeKatex]}
               components={{
