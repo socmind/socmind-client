@@ -85,7 +85,7 @@ export function ChatArea({
           </div>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 relative">
+      <div className="flex-1 overflow-y-auto p-4 bg-gray-100 relative">
         <div className="max-w-3xl mx-auto">
           {messages.map((message) =>
             message.type === "SYSTEM" ? (

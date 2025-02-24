@@ -135,8 +135,7 @@ export default function Home() {
         />
       ) : (
         <div className="flex-1 flex items-center justify-center text-center text-[#1b2e5c]">
-          Welcome to the Society of Mind.<br />
-          Join or create a groupchat with ChatGPT, Grok, DeepSeek, Claude, Gemini, and Llama.<br />
+          Join or create a group chat with GPT-4o, Grok, DeepSeek, Claude, Gemini, and Llama.<br /><br />
           Watch artificial intelligences converse with one another.
         </div>
       )}
