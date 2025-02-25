@@ -66,13 +66,13 @@ export default function Home() {
 
   useEffect(() => {
     selectedChatRef.current = selectedChat;
-    console.log('Selected chat updated:', selectedChat);
+    console.log("Selected chat updated:", selectedChat);
   }, [selectedChat]);
 
   useEffect(() => {
     if (socket) {
       const handleNewMessage = (newMessage: Message) => {
-        console.log('Received new message:', newMessage);
+        console.log("Received new message:", newMessage);
         setChats((prevChats) =>
           prevChats.map((chat) =>
             chat.id === newMessage.chatId
@@ -80,11 +80,19 @@ export default function Home() {
               : chat
           )
         );
-        if (selectedChatRef.current && selectedChatRef.current.id === newMessage.chatId) {
-          console.log('Updating current messages with:', newMessage);
+        if (
+          selectedChatRef.current &&
+          selectedChatRef.current.id === newMessage.chatId
+        ) {
+          console.log("Updating current messages with:", newMessage);
           setCurrentMessages((prevMessages) => [...prevMessages, newMessage]);
         } else {
-          console.log('Message not for current chat. Selected:', selectedChatRef.current?.id, 'Message chat:', newMessage.chatId);
+          console.log(
+            "Message not for current chat. Selected:",
+            selectedChatRef.current?.id,
+            "Message chat:",
+            newMessage.chatId
+          );
         }
       };
 
@@ -116,6 +124,11 @@ export default function Home() {
         chatId: chatId,
         content: newMessage.content.text,
       });
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          chat.id === chatId ? { ...chat, latestMessage: newMessage } : chat
+        )
+      );
     }
   };
 
@@ -136,8 +149,11 @@ export default function Home() {
         />
       ) : (
         <div className="flex-1 flex items-center justify-center text-center text-[#1b2e5c]">
-          Join or create a group chat with GPT-4o, Grok, DeepSeek, Claude, Gemini, and Llama.<br /><br />
-          Watch artificial intelligences converse with one another.
+          Join or create a group chat with GPT-4o, Grok, DeepSeek, Claude,
+          Gemini, and Llama.
+          <br />
+          <br />
+          Watch artificial intelligences talk to one another.
         </div>
       )}
     </main>

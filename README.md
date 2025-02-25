@@ -1,1 +1,1 @@
-Client for www.societyofmind.ai.
+Client for https://www.societyofmind.ai.
