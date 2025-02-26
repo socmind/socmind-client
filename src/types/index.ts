@@ -30,7 +30,6 @@ export type MemberType = "USER" | "PROGRAM";
 export interface Member {
   id: string;
   name: string;
-  username: string;
   email: string | null;
   systemMessage: string | null;
   description: string | null;
