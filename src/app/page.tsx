@@ -120,7 +120,15 @@ export default function Home() {
 
   const handleChatUpdate = (updatedChat: Partial<Chat>) => {
     if (selectedChat && updatedChat.id === selectedChat.id) {
+      // Update the selected chat
       setSelectedChat({ ...selectedChat, ...updatedChat });
+      
+      // Also update the chat in the chats array for the sidebar
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          chat.id === updatedChat.id ? { ...chat, ...updatedChat } : chat
+        )
+      );
     }
   };
 

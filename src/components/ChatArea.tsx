@@ -170,6 +170,18 @@ export function ChatArea({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Context
+                </label>
+                <textarea
+                  value={selectedChat.context || ""}
+                  readOnly
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+                  rows={selectedChat.context ? 3 : 1}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Topic
                 </label>
                 <textarea
