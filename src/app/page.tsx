@@ -8,7 +8,7 @@ import { Chat, Message } from "@/types";
 import { useSocket } from "@/hooks/useSocket";
 
 export default function Home() {
-  const { socket } = useSocket();
+  const { socket, refreshConnection } = useSocket();
   const [chats, setChats] = useState<Chat[]>([]);
   const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
@@ -25,6 +25,12 @@ export default function Home() {
       }
     });
   };
+
+  // Effect to handle component mount and refresh connection
+  useEffect(() => {
+    // When the component mounts, refresh the connection to ensure we get fresh data
+    refreshConnection();
+  }, []);
 
   useEffect(() => {
     if (socket) {
@@ -112,6 +118,12 @@ export default function Home() {
     }
   };
 
+  const handleChatUpdate = (updatedChat: Partial<Chat>) => {
+    if (selectedChat && updatedChat.id === selectedChat.id) {
+      setSelectedChat({ ...selectedChat, ...updatedChat });
+    }
+  };
+
   const addNewChat = (newChat: Chat) => {
     addChatIfNotExists(newChat);
     handleChatSelect(newChat);
@@ -146,14 +158,15 @@ export default function Home() {
           selectedChat={selectedChat}
           messages={currentMessages}
           onSendMessage={addNewMessage}
+          onChatUpdate={handleChatUpdate}
         />
       ) : (
         <div className="flex-1 flex items-center justify-center text-center text-[#1b2e5c]">
-          Join or create a group chat with GPT-4o, Grok, DeepSeek, Claude,
-          Gemini, and Llama.
+          Join or create a group chat with GPT-4o, Claude, DeepSeek, Gemini,
+          Grok, and more.
           <br />
           <br />
-          Watch artificial intelligences talk to one another.
+          Watch artificial intelligences interact with one another.
         </div>
       )}
     </main>

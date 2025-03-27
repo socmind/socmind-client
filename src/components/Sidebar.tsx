@@ -3,9 +3,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Chat, Member } from "@/types";
-import { Plus, Loader, Loader2 } from "lucide-react";
+import { Plus, Loader, Loader2, PersonStanding } from "lucide-react";
 import { chatApi } from "@/api/chat";
 import { Orbitron } from "next/font/google";
+import Link from "next/link";
 
 const orbitron = Orbitron({ subsets: ["latin"] });
 
@@ -201,7 +202,7 @@ export function Sidebar({
               }`}
               onClick={() => onChatSelect(chat)}
             >
-              <div className="flex-1 min-w-0 ml-5">
+              <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-sm truncate">
                   {getChatDisplayName(chat)}
                 </h3>
@@ -219,6 +220,17 @@ export function Sidebar({
           ))}
         </div>
       )}
+      
+      {/* Agents link at the bottom of sidebar */}
+      <div className="mt-4 pt-3">
+        <Link
+          href="/agents"
+          className="flex items-center p-2 rounded-md hover:bg-gray-100 text-[#1b2e5c] transition-colors"
+        >
+          <PersonStanding size={18} className="mr-2" />
+          <span className="text-sm font-medium">Manage AI Agents</span>
+        </Link>
+      </div>
     </div>
   );
 }

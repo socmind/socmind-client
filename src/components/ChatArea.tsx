@@ -2,25 +2,33 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Send } from "lucide-react";
+import { Send, Settings } from "lucide-react";
 import { Chat, Message } from "@/types";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
+import { chatApi } from "@/api/chat";
 
 interface ChatAreaProps {
   selectedChat: Chat;
   messages: Message[];
   onSendMessage: (chatId: string, message: Message) => void;
+  onChatUpdate?: (updatedChat: Partial<Chat>) => void;
 }
 
 export function ChatArea({
   selectedChat,
   messages,
   onSendMessage,
+  onChatUpdate,
 }: ChatAreaProps): JSX.Element {
   const [inputMessage, setInputMessage] = useState("");
+  const [showChatSettings, setShowChatSettings] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [editedChatName, setEditedChatName] = useState<string | null>(null);
+  const [editedChatTopic, setEditedChatTopic] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const userId = "user";
@@ -35,6 +43,22 @@ export function ChatArea({
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [inputMessage]);
+
+  useEffect(() => {
+    // Update the edited values when the selected chat changes
+    if (selectedChat) {
+      setEditedChatName(selectedChat.name);
+      setEditedChatTopic(selectedChat.topic);
+    }
+  }, [selectedChat]);
+
+  useEffect(() => {
+    if (showChatSettings) {
+      setEditedChatName(selectedChat.name);
+      setEditedChatTopic(selectedChat.topic);
+      setErrorMessage(null);
+    }
+  }, [showChatSettings, selectedChat]);
 
   const getChatDisplayName = (chat: Chat): string => {
     const filteredMembers = chat.memberIds.filter(
@@ -65,26 +89,156 @@ export function ChatArea({
     }
   };
 
+  const handleSaveChat = async () => {
+    try {
+      setIsUpdating(true);
+      setErrorMessage(null);
+      const updatedChat = await chatApi.updateChat({
+        chatId: selectedChat.id,
+        name: editedChatName,
+        topic: editedChatTopic,
+      });
+
+      // Call the callback to update parent state if provided
+      if (onChatUpdate) {
+        onChatUpdate({
+          ...selectedChat,
+          name: updatedChat.name,
+          topic: updatedChat.topic,
+        });
+      }
+
+      setShowChatSettings(false);
+    } catch (error) {
+      console.error("Failed to update chat:", error);
+      setErrorMessage("Failed to update chat.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <div className="flex-1 flex flex-col">
       <div className="h-16 bg-gray-100 p-4">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <h2 className="font-semibold">{getChatDisplayName(selectedChat)}</h2>
-          <div className="flex -space-x-2">
-            {selectedChat.memberIds
-              .filter((memberId) => memberId !== userId)
-              .map((memberId) => (
-                <div
-                  key={memberId}
-                  className="w-8 h-8 rounded-full bg-[#1b2e5c] text-white flex items-center justify-center text-sm font-medium ring-2 ring-white relative hover:z-10 hover:scale-110 transform transition-all cursor-default"
-                  title={`${memberId}`}
-                >
-                  {memberId.charAt(0).toUpperCase()}
-                </div>
-              ))}
-          </div>
+          <button
+            onClick={() => setShowChatSettings(true)}
+            className="w-8 h-8 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center hover:bg-gray-300 transition-colors"
+            title="Chat Settings"
+          >
+            <Settings size={16} />
+          </button>
         </div>
       </div>
+
+      {showChatSettings && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Chat Settings</h3>
+
+            {errorMessage && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                {errorMessage}
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Chat ID
+                </label>
+                <input
+                  type="text"
+                  value={selectedChat.id}
+                  readOnly
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Chat Name
+                </label>
+                <input
+                  type="text"
+                  value={editedChatName || ""}
+                  onChange={(e) => setEditedChatName(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Topic
+                </label>
+                <textarea
+                  value={editedChatTopic || ""}
+                  onChange={(e) => setEditedChatTopic(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Created At
+                </label>
+                <input
+                  type="text"
+                  value={new Date(selectedChat.createdAt).toLocaleString()}
+                  readOnly
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Updated At
+                </label>
+                <input
+                  type="text"
+                  value={new Date(selectedChat.updatedAt).toLocaleString()}
+                  readOnly
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Members
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {selectedChat.memberIds.map((memberId) => (
+                    <span
+                      key={memberId}
+                      className="px-2 py-1 bg-gray-200 rounded-full text-sm"
+                    >
+                      {memberId}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end space-x-3">
+              <button
+                onClick={() => setShowChatSettings(false)}
+                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveChat}
+                disabled={isUpdating}
+                className="px-4 py-2 bg-[#1b2e5c] text-white rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+              >
+                {isUpdating ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex-1 overflow-y-auto p-4 bg-gray-100 relative">
         <div className="max-w-3xl mx-auto">
           {messages.map((message) =>

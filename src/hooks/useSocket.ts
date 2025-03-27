@@ -31,6 +31,16 @@ export const useSocket = () => {
     };
   }, []);
 
+  // Function to refresh the connection by disconnecting and reconnecting
+  const refreshConnection = () => {
+    if (socket) {
+      console.log("Refreshing socket connection...");
+      // Disconnect and reconnect to trigger the initialData event
+      socket.disconnect();
+      socket.connect();
+    }
+  };
+
   const disconnect = () => {
     if (socket) {
       socket.disconnect();
@@ -38,5 +48,5 @@ export const useSocket = () => {
     }
   };
 
-  return { socket, isConnected };
+  return { socket, isConnected, refreshConnection };
 };
