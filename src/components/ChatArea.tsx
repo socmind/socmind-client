@@ -134,7 +134,7 @@ export function ChatArea({
 
       {showChatSettings && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
             <h3 className="text-lg font-semibold mb-4">Chat Settings</h3>
 
             {errorMessage && (
@@ -176,7 +176,7 @@ export function ChatArea({
                   value={selectedChat.context || ""}
                   readOnly
                   className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
-                  rows={selectedChat.context ? 3 : 1}
+                  rows={selectedChat.context ? 5 : 1}
                 />
               </div>
 
@@ -188,7 +188,7 @@ export function ChatArea({
                   value={editedChatTopic || ""}
                   onChange={(e) => setEditedChatTopic(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  rows={3}
+                  rows={1}
                 />
               </div>
 
@@ -253,8 +253,15 @@ export function ChatArea({
       )}
       <div className="flex-1 overflow-y-auto p-4 bg-gray-100 relative">
         <div className="max-w-3xl mx-auto">
-          {messages.map((message) =>
-            message.type === "SYSTEM" ? (
+          {messages.map((message, index) => {
+            // Skip the first message if it matches the chat context
+            if (index === 0 && 
+                selectedChat.context && 
+                message.content.text === selectedChat.context) {
+              return null;
+            }
+            
+            return message.type === "SYSTEM" ? (
               <SystemMessage key={message.id} message={message} />
             ) : (
               <MessageBubble
@@ -262,8 +269,8 @@ export function ChatArea({
                 message={message}
                 isUser={message.senderId === userId}
               />
-            )
-          )}
+            );
+          })}
           <div ref={messagesEndRef} />
         </div>
       </div>
